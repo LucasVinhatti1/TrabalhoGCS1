@@ -1,1 +1,34 @@
-// main 
+public class Principal {
+    public static void main(String[] args) {
+        Parque parque = new Parque();
+        Scanner scanner = new Scanner(System.in);
+        boolean executando = true;
+
+        while (executando) {
+            System.out.println("Selecione uma opção:");
+            System.out.println("1. Cadastrar visitante");
+            System.out.println("2. Listar visitantes");
+            System.out.println("3. Emitir ingresso");
+            System.out.println("4. Registrar visita a atração");
+            System.out.println("5. Localizar visitante");
+            System.out.println("6. Consultar faturamento");
+            System.out.println("7. Consultar atrações por data");
+            System.out.println("8. Sair");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine(); // Consumir nova linha
+
+            switch (opcao) {
+                case 1:
+                    cadastrarVisitante(scanner, parque);
+                    break;
+                case 2:
+                    listarVisitantes(parque);
+                    break;
+                case 3:
+                    emitirIngresso(scanner, parque);
+                    break;
+                case 4:
+                    registrarVisitaAtracao(scanner, parque);
+                    break;
+                case 5:
