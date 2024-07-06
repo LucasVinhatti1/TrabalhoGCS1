@@ -1,1 +1,63 @@
-// aqui vai ser dev a classe park
+import java.util.*;
+
+class Parque {
+    private List<Visitante> visitantes;
+    private List<Atracao> atracoes;
+    private Map<String, List<Ingresso>> ingressos;
+    private static final int MAX_INGRESSOS_POR_DIA = 500;
+
+    public Parque() {
+        visitantes = new ArrayList<>();
+        atracoes = new ArrayList<>();
+        ingressos = new HashMap<>();
+        initAtracoes();
+    }
+
+    private void initAtracoes() {
+        atracoes.add(new Atracao("Montanha-Russa"));
+        atracoes.add(new Atracao("Roda-Gigante"));
+        atracoes.add(new Atracao("Barco Viking"));
+        atracoes.add(new Atracao("Carro-Choque"));
+        atracoes.add(new Atracao("Trem-Fantasma"));
+        // Adicione mais atrações conforme necessário
+    }
+
+    public void adicionarVisitante(Visitante visitante) {
+        visitantes.add(visitante);
+    }
+
+    public List<Visitante> getVisitantes() {
+        return visitantes;
+    }
+
+    public void adicionarIngresso(String data, Visitante visitante) {
+        if (ingressos.getOrDefault(data, new ArrayList<>()).size() < MAX_INGRESSOS_POR_DIA) {
+            int numeroSequencial = ingressos.getOrDefault(data, new ArrayList<>()).size() + 1;
+            Ingresso ingresso = new Ingresso(data, numeroSequencial, visitante);
+            ingressos.computeIfAbsent(data, k -> new ArrayList<>()).add(ingresso);
+        } else {
+            System.out.println("Limite de ingressos atingido para a data: " + data);
+        }
+    }
+
+    public void registrarVisita(Visitante visitante, Atracao atracao) {
+        visitante.visitarAtracao(atracao);
+        atracao.incrementarVisitantes();
+    }
+
+    public List<Atracao> getAtracoes() {
+        return atracoes;
+    }
+
+    public List<Ingresso> getIngressosPorData(String data) {
+        return ingressos.getOrDefault(data, new ArrayList<>());
+    }
+
+    public List<Ingresso> getIngressos() {
+        List<Ingresso> todosIngressos = new ArrayList<>();
+        for (List<Ingresso> ingressosDiarios : ingressos.values()) {
+            todosIngressos.addAll(ingressosDiarios);
+        }
+        return todosIngressos;
+    }
+}
