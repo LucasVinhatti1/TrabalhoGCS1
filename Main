@@ -31,4 +31,159 @@ public class Principal {
                 case 4:
                     registrarVisitaAtracao(scanner, parque);
                     break;
-                case 5:
+                case 5:  localizarVisitante(scanner, parque);
+                    break;
+                case 6:
+                    consultarFaturamento(scanner, parque);
+                    break;
+                case 7:
+                    consultarAtracoesPorData(scanner, parque);
+                    break;
+                case 8:
+                    executando = false;
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+                    break;
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static void cadastrarVisitante(Scanner scanner, Parque parque) {
+        System.out.println("Nome:");
+        String nome = scanner.nextLine();
+        System.out.println("Ano de nascimento:");
+        int anoNascimento = scanner.nextInt();
+        scanner.nextLine(); // Consumir nova linha
+
+        if (2024 - anoNascimento >= 12) {
+            System.out.println("Telefone:");
+            String telefone = scanner.nextLine();
+            parque.adicionarVisitante(new VisitanteAdulto(nome, anoNascimento, telefone));
+        } else {
+            System.out.println("Nome do responsável:");
+            String nomeResponsavel = scanner.nextLine();
+            System.out.println("Telefone do responsável:");
+  String telefoneResponsavel = scanner.nextLine();
+            parque.adicionarVisitante(new VisitanteCrianca(nome, anoNascimento, nomeResponsavel, telefoneResponsavel));
+        }
+
+        System.out.println("Visitante cadastrado com sucesso!");
+    }
+
+    private static void listarVisitantes(Parque parque) {
+        List<Visitante> visitantes = parque.getVisitantes();
+        if (visitantes.isEmpty()) {
+            System.out.println("Nenhum visitante cadastrado.");
+        } else {
+            for (Visitante visitante : visitantes) {
+                System.out.println("Nome: " + visitante.getNome() + ", Ano de Nascimento: " + visitante.getAnoNascimento());
+            }
+        }
+    }
+
+    private static void emitirIngresso(Scanner scanner, Parque parque) {
+        System.out.println("Data (dd/mm/yyyy):");
+        String data = scanner.nextLine();
+        System.out.println("Nome do visitante:");
+        String nomeVisitante = scanner.nextLine();
+
+        Visitante visitante = parque.getVisitantes().stream()
+            .filter(v -> v.getNome().equalsIgnoreCase(nomeVisitante))
+            .findFirst()
+            .orElse(null);
+
+        if (visitante != null) {
+            parque.adicionarIngresso(data, visitante);
+            System.out.println("Ingresso emitido com sucesso!");
+        } else {
+            System.out.println("Visitante não encontrado.");
+        } }
+
+    private static void registrarVisitaAtracao(Scanner scanner, Parque parque) {
+        System.out.println("Nome do visitante:");
+        String nomeVisitante = scanner.nextLine();
+        System.out.println("Nome da atração:");
+        String nomeAtracao = scanner.nextLine();
+
+        Visitante visitante = parque.getVisitantes().stream()
+            .filter(v -> v.getNome().equalsIgnoreCase(nomeVisitante))
+            .findFirst()
+            .orElse(null);
+Atracao atracao = parque.getAtracoes()
+            .stream()
+            .filter(a -> a.getNome().equalsIgnoreCase(nomeAtracao))
+            .findFirst()
+            .orElse(null);
+
+        if (visitante != null && atracao != null) {
+            parque.registrarVisita(visitante, atracao);
+            System.out.println("Visita registrada com sucesso!");
+        } else {
+            System.out.println("Visitante ou atração não encontrados.");
+        }
+    }
+
+    private static void localizarVisitante(Scanner scanner, Parque parque) {
+        System.out.println("Buscar por (1) nome ou (2) ID do ingresso?");
+        int opcaoBusca = scanner.nextInt();
+        scanner.nextLine(); // Consumir nova linha
+
+        if (opcaoBusca == 1) {
+            System.out.println("Nome:");
+            String nome = scanner.nextLine();parque.getVisitantes().stream()
+                .filter(v -> v.getNome().contains(nome))
+                .forEach(v -> {
+                    System.out.println("Nome: " + v.getNome() + ", Ano de Nascimento: " + v.getAnoNascimento());
+                    System.out.println("Atrações visitadas:");
+                    v.getAtracoesVisitadas().forEach(a -> System.out.println(a.getNome()));
+                });
+        } else if (opcaoBusca == 2) {
+            System.out.println("ID do ingresso:");
+            String idIngresso = scanner.nextLine();
+            parque.getIngressos().stream()
+                .filter(t -> t.toString().equals(idIngresso))
+                .findFirst()
+                .ifPresent(ingresso -> {
+                    Visitante visitante = ingresso.getVisitante();
+                    System.out.println("Nome: " + visitante.getNome() + ", Ano de Nascimento: " + visitante.getAnoNascimento());
+                    System.out.println("Atrações visitadas:");
+                    visitante.getAtracoesVisitadas().forEach(a -> System.out.println(a.getNome()));
+                });
+        } else {
+            System.out.println("Opção inválida!");
+        }
+    }
+
+    private static void consultarFaturamento(Scanner scanner, Parque parque) {
+        System.out.println("Mês (mm/yyyy):");
+        String mesAno = scanner.nextLine();
+        double faturamento = parque.getIngressos().stream()
+            .filter(t -> t.getData().substring(3).equals(mesAno))
+            .mapToDouble(t -> t.getVisitante().getPrecoIngresso())
+            .sum();
+System.out.println("Faturamento para " + mesAno + ": $" + faturamento);
+    }
+
+    private static void consultarAtracoesPorData(Scanner scanner, Parque parque) {
+        System.out.println("Data (dd/mm/yyyy):");
+        String data = scanner.nextLine();
+
+        Map<String, Integer> contadorAtracoes = new HashMap<>();
+        for (Ingresso ingresso : parque.getIngressosPorData(data)) {
+            for (Atracao atracao : ingresso.getVisitante().getAtracoesVisitadas()) {
+                contadorAtracoes.put(atracao.getNome(), contadorAtracoes.getOrDefault(atracao.getNome(), 0) + 1);
+            }
+        }
+
+        List<Map.Entry<String, Integer>> listaAtracoes = new ArrayList<>(contadorAtracoes.entrySet());
+        listaAtracoes.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+
+        System.out.println("Atrações visitadas em " + data + ":");
+        listaAtracoes.forEach(entry -> {
+            System.out.println(entry.getKey() + " - " + entry.getValue() + " visitantes");
+        });
+    }
+}
