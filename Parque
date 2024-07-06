@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Parque {
+public class Parque {
     private List<Visitante> visitantes;
     private List<Atracao> atracoes;
     private Map<String, List<Ingresso>> ingressos;
