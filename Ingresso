@@ -1,4 +1,4 @@
-class Ingresso {
+public class Ingresso {
     private String data;
     private int numeroSequencial;
     private Visitante visitante;
