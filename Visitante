@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class Visitante {
+public abstract class Visitante {
     private String nome;
     private int anoNascimento;
     private List<Atracao> atracoesVisitadas;
