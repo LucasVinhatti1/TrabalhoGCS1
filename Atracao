@@ -1,4 +1,4 @@
-class Atracao {
+public class Atracao {
     private String nome;
     private int contadorVisitantes;
 
